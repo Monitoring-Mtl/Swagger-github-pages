@@ -19,8 +19,13 @@ tags:
   - name: "shapes"
     description: "All required data to draw bus lines on map"
     externalDocs:
-      description: "More information about shapes"
+      description: "More info"
       url: "https://developers.google.com/transit/gtfs/reference#shapestxt"
+  - name: "stops"
+    description: "All about every stops available"
+    externalDocs:
+      description: "More info"
+      url: "https://www.stm.info/fr/infos"
 schemes:
   - "https"
 paths:
