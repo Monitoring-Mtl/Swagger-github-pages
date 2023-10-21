@@ -12,15 +12,15 @@ tags:
   - name: "trips"
     description: "Everything about STM trips"
     externalDocs:
-      description: "Find out more"
+      description: "More info"
       url: "https://www.stm.info/fr/infos"
-  - name: "store"
-    description: "Access to Petstore orders"
-  - name: "user"
-    description: "Operations about user"
+  - name: "routes"
+    description: "All about STM bus routes"
+  - name: "shapes"
+    description: "All required data to draw bus lines on map"
     externalDocs:
-      description: "Find out more about our store"
-      url: "http://swagger.io"
+      description: "More information about shapes"
+      url: "https://developers.google.com/transit/gtfs/reference#shapestxt"
 schemes:
   - "https"
 paths:
@@ -37,7 +37,7 @@ paths:
           description: "successful operation"
           schema:
             items:
-              $ref: "#/definitions/Pet"
+              $ref: "#/definitions/Trips"
   /trips/{tripId}:
     get:
       tags:
@@ -59,314 +59,129 @@ paths:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/ApiResponse"
+            $ref: "#/definitions/Trips"
 
-  /store/order:
-    post:
+        404:
+          description: "Trip not found"
+
+  /routes:
+    get:
       tags:
-        - "store"
-      summary: "Place an order for a pet"
+        - "routes"
+      summary: "Get all routes"
       description: ""
-      operationId: "placeOrder"
-      consumes:
-        - "application/json"
       produces:
         - "application/json"
-        - "application/xml"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "order placed for purchasing the pet"
-          required: true
-          schema:
-            $ref: "#/definitions/Order"
       responses:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-  /store/order/{orderId}:
+            items:
+              $ref: "#/definitions/Routes"
+
+  /routes/{routeId}/:
     get:
       tags:
-        - "store"
-      summary: "Find purchase order by ID"
-      description:
-        "For valid response try integer IDs with value >= 1 and <= 10.\
-        \ Other values will generated exceptions"
-      operationId: "getOrderById"
+        - "routes"
+      summary: "Find route by id"
       produces:
         - "application/json"
-        - "application/xml"
       parameters:
-        - name: "orderId"
+        - name: "routeId"
           in: "path"
-          description: "ID of pet that needs to be fetched"
+          description: "ID of route that needs to be fetched"
           required: true
           type: "integer"
-          maximum: 10
+          maximum: 999
           minimum: 1
           format: "int64"
       responses:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid ID supplied"
+            $ref: "#/definitions/Routes"
         404:
-          description: "Order not found"
-    delete:
+          description: "Route not found"
+
+  /shapes:
+    get:
       tags:
-        - "store"
-      summary: "Delete purchase order by ID"
-      description:
-        "For valid response try integer IDs with positive integer value.\
-        \ Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
+        - "shapes"
+      summary: "Returns the full list of shapes"
+      description: "A shape is a liste of shapes to draw a route on a map"
       produces:
         - "application/json"
-        - "application/xml"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Shapes"
+
+  /shapes/{shapeId}:
+    get:
+      tags:
+        - "shapes"
+      summary: "Returns the array object containing all the shapes of the provided shapeId"
+      description: ""
+      produces:
+        - "application/json"
       parameters:
-        - name: "orderId"
+        - in: "path"
+          name: "shapeId"
+          type: "integer"
+          description: "List of user object"
+          required: true
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Shapes"
+
+        404:
+          description: "Shape not found"
+
+  /stops:
+    get:
+      tags:
+        - "stops"
+      summary: "Returns all stops"
+      description: ""
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            items:
+              $ref: "#/definitions/Stops"
+
+  /stops/{stopId}:
+    get:
+      tags:
+        - "stops"
+      summary: "Get the stop matching the specified Id"
+      description: ""
+      produces:
+        - "application/json"
+      parameters:
+        - name: "stopId"
           in: "path"
-          description: "ID of the order that needs to be deleted"
+          description: "The stop id"
           required: true
           type: "integer"
-          minimum: 1
-          format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-  /store/inventory:
-    get:
-      tags:
-        - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-        - "application/json"
-      parameters: []
       responses:
         200:
           description: "successful operation"
           schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
-      security:
-        - api_key: []
-  /user/createWithArray:
-    post:
-      tags:
-        - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithArrayInput"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-        - "application/xml"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "List of user object"
-          required: true
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
-    post:
-      tags:
-        - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithListInput"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-        - "application/xml"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "List of user object"
-          required: true
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/{username}:
-    get:
-      tags:
-        - "user"
-      summary: "Get user by user name"
-      description: ""
-      operationId: "getUserByName"
-      produces:
-        - "application/json"
-        - "application/xml"
-      parameters:
-        - name: "username"
-          in: "path"
-          description: "The name that needs to be fetched. Use user1 for testing. "
-          required: true
-          type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid username supplied"
+            $ref: "#/definitions/Stops"
+
         404:
-          description: "User not found"
-    put:
-      tags:
-        - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-        - "application/xml"
-      parameters:
-        - name: "username"
-          in: "path"
-          description: "name that need to be updated"
-          required: true
-          type: "string"
-        - in: "body"
-          name: "body"
-          description: "Updated user object"
-          required: true
-          schema:
-            $ref: "#/definitions/User"
-      responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
-      tags:
-        - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-        - "application/json"
-        - "application/xml"
-      parameters:
-        - name: "username"
-          in: "path"
-          description: "The name that needs to be deleted"
-          required: true
-          type: "string"
-      responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-  /user/login:
-    get:
-      tags:
-        - "user"
-      summary: "Logs user into the system"
-      description: ""
-      operationId: "loginUser"
-      produces:
-        - "application/json"
-        - "application/xml"
-      parameters:
-        - name: "username"
-          in: "query"
-          description: "The user name for login"
-          required: true
-          type: "string"
-        - name: "password"
-          in: "query"
-          description: "The password for login in clear text"
-          required: true
-          type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          headers:
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-          schema:
-            type: "string"
-        400:
-          description: "Invalid username/password supplied"
-  /user/logout:
-    get:
-      tags:
-        - "user"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
-      produces:
-        - "application/json"
-        - "application/xml"
-      parameters: []
-      responses:
-        default:
-          description: "successful operation"
-  /user:
-    post:
-      tags:
-        - "user"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-        - "application/xml"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "Created user object"
-          required: true
-          schema:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-securityDefinitions:
-  api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "https://petstore.swagger.io/oauth/authorize"
-    flow: "implicit"
-    scopes:
-      read:pets: "read your pets"
-      write:pets: "modify pets in your account"
+          description: "Stop not found"
+
 definitions:
   ApiResponse:
     type: "object"
@@ -378,115 +193,156 @@ definitions:
         type: "string"
       message:
         type: "string"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  Pet:
+
+  Trips:
     type: "object"
     required:
-      - "name"
-      - "photoUrls"
+      - "route_id"
+      - "service_id"
+      - "trip_id"
+      - "trip_headsign"
+      - "direction_id"
+      - "shape_id"
+      - "wheelchair_accessible"
     properties:
-      id:
+      route_id:
         type: "integer"
         format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
+        example: 5
+      service_id:
         type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          type: "string"
-          xml:
-            name: "photoUrl"
-      tags:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          xml:
-            name: "tag"
-          $ref: "#/definitions/Tag"
-      status:
+        example: "23S-GLOBAUX-00-S"
+      trip_id:
+        type: "integer"
+        format: "int64"
+        example: 265937677
+      trip_headsign:
         type: "string"
-        description: "pet status in the store"
-        enum:
-          - "available"
-          - "pending"
-          - "sold"
-    xml:
-      name: "Pet"
-  Tag:
+      direction_id:
+        type: "integer"
+        format: "int64"
+      shape_id:
+        type: "integer"
+        format: "int64"
+        example: 51763
+      wheelchair_accessible:
+        type: "integer"
+        format: "int64"
+        example: 1
+      note_fr:
+        type: "string"
+      note_en:
+        type: "string"
+  Routes:
     type: "object"
+    required:
+      - route_id
+      - agency_id
+      - route_short_name
+      - route_long_name
+      - route_type
+      - route_url
+      - route_color
     properties:
-      id:
+      route_id:
         type: "integer"
         format: "int64"
-      name:
+        example: 1
+      agency_id:
         type: "string"
-    xml:
-      name: "Tag"
-  Order:
+        example: "STM"
+      route_short_name:
+        type: "integer"
+        format: "int64"
+        example: 1
+      route_long_name:
+        type: "string"
+        example: "Ligne 1 - Verte"
+      route_type:
+        type: "integer"
+        example: 1
+      route_url:
+        type: "string"
+        example: "http://www.stm.info/fr/infos/reseaux/metro/verte"
+      route_color:
+        type: "string"
+        example: D95700
+        description: "Hex color code"
+      route_text_color:
+        type: "integer"
+        format: "int64"
+        example: 0
+
+  Shapes:
     type: "object"
+    required:
+      - shape_id
+      - shape_pt_lat
+      - shape_pt_lon
+      - shape_pt_sequence
     properties:
-      id:
+      shape_id:
         type: "integer"
         format: "int64"
-      petId:
+        example: 11071
+      shape_pt_lat:
         type: "integer"
         format: "int64"
-      quantity:
+        example: 45.446466
+      shape_pt_lon:
+        type: "integer"
+        format: "int64"
+        example: -73.603118
+      shape_pt_sequence:
+        type: "integer"
+        format: "int64"
+        example: 10001
+
+  Stops:
+    type: "object"
+    required:
+      - stop_id
+      - stop_code
+      - stop_name
+      - stop_lat
+      - stop_lon
+      - location_type
+      - wheelchair_accessible
+
+    properties:
+      stop_id:
+        type: "string"
+        example: "STATION_M118"
+      stop_code:
+        type: "integer"
+        format: "int64"
+        example: 10118
+      stop_name:
+        type: "string"
+        example: "STATION AGRIGNON"
+      stop_lat:
+        type: "integer"
+        format: "int64"
+        example: 45.446466
+      stop_lon:
+        type: "integer"
+        format: "int64"
+        example: -73.603118
+      stop_url:
+        type: "string"
+        example: ""
+      location_type:
+        type: "integer"
+        format: "int64"
+        example: 1
+      parent_station:
+        type: "string"
+        example: ""
+      wheelchair_accessible:
         type: "integer"
         format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-          - "placed"
-          - "approved"
-          - "delivered"
-      complete:
-        type: "boolean"
-    xml:
-      name: "Order"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
+        example: 1
+
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"
