@@ -6,7 +6,7 @@ info:
   title: "Serverless API"
   contact:
     email: "info@monitoringMTL.io"
-host: "94z4jf0434.execute-api.us-east-1.amazonaws.com"
+host: "mb8ec8s5e9.execute-api.ca-central-1.amazonaws.com"
 basePath: "/prod/api/v1"
 tags:
   - name: "trips"
